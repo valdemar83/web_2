@@ -5,7 +5,9 @@ from PIL import Image
 from numpy import array
 from math import sqrt
 
-bot = telebot.TeleBot('1457253091:AAGDc2IG8KW9BJ8C-b9LpVGW1FSHEigr-4E')
+#@Fig_Calc_bot
+
+bot = telebot.TeleBot('Token')
 figure_chose_markup = telebot.types.ReplyKeyboardMarkup(True, True)
 figure_chose_markup.row('Треугольник')
 figure_chose_markup.row('Круг')
