@@ -4,29 +4,33 @@ from requests import get
 from PIL import Image
 from numpy import array
 from math import sqrt
+from redis import Redis
+import time
 
-#@Fig_Calc_bot
-
-bot = telebot.TeleBot('Token')
+handle = open("token.txt", "r")
+token = handle.readline()
+bot = telebot.TeleBot(token)
+r = Redis(host='127.0.0.1', port=6379)
 figure_chose_markup = telebot.types.ReplyKeyboardMarkup(True, True)
 figure_chose_markup.row('Треугольник')
 figure_chose_markup.row('Круг')
 figure_chose_markup.row('Квадрат')
 
-
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_message(message.chat.id,
-                     'Привет, это бот для вычисления параметров геометрических фигур. Чтобы начать, выберите фигуру или свяжитесь с помощником (/admin):'
+                     'Привет, это бот для вычисления параметров геометрических фигур. Чтобы начать, выберите фигуру или напишите нам сообщение, мы обязательно на него ответим:'
                      ,reply_markup = figure_chose_markup)
     
 #   Написать помощнику 
-@bot.message_handler(commands=['admin'])
-def default_test(message):
-    keyboard = types.InlineKeyboardMarkup()
-    url_button = types.InlineKeyboardButton(text="Написать помощнику", url="https://t.me/Vladimir_dolar")
-    keyboard.add(url_button)
-    bot.send_message(message.chat.id, "Эта кнопка поможет Вам связатся с помощником в решении Ваших задач:", reply_markup=keyboard)
+#@bot.message_handler(commands=['admin'])
+#def default_test(message):
+    #keyboard = types.InlineKeyboardMarkup()
+    #url_button = types.InlineKeyboardButton(text="Написать помощнику", url="https://t.me/Vladimir_dolar")
+    #keyboard.add(url_button)
+    #bot.send_message(message.chat.id, "Эта кнопка поможет Вам связатся с помощником в решении Ваших задач:", reply_markup=keyboard)
+    #Rediska.asd(message.from_user.id, message)
+
 
             
 @bot.message_handler(content_types=["text"])
@@ -38,7 +42,10 @@ def send_text(message):
     elif message.text == 'Квадрат':
         bot.send_message(message.chat.id, 'Выбери круг ',reply_markup = figure_chose_markup)
     else:
-        bot.send_message(message.chat.id, 'Что-то пошло не так, начни со /start')
+        print(time.ctime())
+        print(message.from_user.id)
+        print(message.text)
+        r.append(str(message.from_user.id), str(message.text + " | "))
         
 def circle_unknown_param(message):    
     circle_choose_unknown_param = telebot.types.ReplyKeyboardMarkup(True, True)
@@ -133,15 +140,15 @@ def circle_diametr_by_smth(message):
 
 def circle_diametr_by_radius(message):
     radius = int(message.text)*2
-    radius_text = str(length)
-    answer = ['Ваш диаметр:    ', length_text, ' (см)']
+    radius_text = str(radius)
+    answer = ['Ваш диаметр:    ', radius_text, ' (см)']
     answer = ''.join(answer)
     bot.send_message(message.chat.id, answer)
 
 def circle_diametr_by_length(message):
     length = int(message.text)
     length_text = str(length)
-    answer = ['Ваш диаметр:    ', diam_text, '/π', ' (см)']
+    answer = ['Ваш диаметр:    ', length_text, '/π', ' (см)']
     answer = ''.join(answer)
     bot.send_message(message.chat.id, answer)
     
